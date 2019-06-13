@@ -8,7 +8,7 @@ def lambda_handler(event, context):
     client = storage.Client.from_service_account_json('*')
     s3 = boto3.client("s3")
     gcp_bucket = '**'
-    gcp_bucket2 = '***'
+    gcp_archive_bucket = '***'
     aws_bucket = '****'
     bucket = client.get_bucket(gcp_bucket)
     bucket2 = client.get_bucket(gcp_bucket2)
