@@ -29,8 +29,7 @@ The following AWS documentation is helpful: https://docs.aws.amazon.com/lambda/l
 The following procedures are completed in PowerShell: 
 
 a) Create a directory for the dependencies: "mkdir connection"
-b) 
-CD to the directory: "cd connection"
+b) CD to the directory: "cd connection"
 
 c) Install the packages into the directory: "pip install --upgrade google-cloud-storage --target ."
 
