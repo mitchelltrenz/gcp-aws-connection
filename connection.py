@@ -11,7 +11,7 @@ def lambda_handler(event, context):
     gcp_archive_bucket = '***'
     aws_bucket = '****'
     bucket = client.get_bucket(gcp_bucket)
-    bucket2 = client.get_bucket(gcp_bucket2)
+    bucket2 = client.get_bucket(gcp_archive_bucket)
     blobs = bucket.list_blobs()
     for blob in blobs:
         with io.BytesIO() as data:
