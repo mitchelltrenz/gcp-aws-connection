@@ -1,0 +1,65 @@
+# gcp-aws-connection
+
+The following steps can be followed to create an automated push of files from GCP Storage to AWS S3.
+
+In this particular example, the following products are utilized: 2 GCP Storage Buckets (original and archive), 
+AWS S3 Bucket (destination), AWS Lambda, AWS CloudWatch.
+
+
+
+Step 1: Preparation --
+
+Create and download a service account key from your Google Cloud Platform environment. The credentials are a key-value pair stored in JSON format. 
+The steps are outlined at https://cloud.google.com/iam/docs/creating-managing-service-account-keys.
+
+
+
+Step 2: Update the function code --
+
+Download the connection.py function code and update with your bucket names (3) and google credentials (1). 
+There are four input variables that you need to fill.
+
+
+
+Step 3: Create a zip folder --
+
+In order to get Lambda to run your code, you have to package the contents in a zip folder containing 1) your function code, 2) google credentials, 3) google cloud client library. 
+The following AWS documentation is helpful: https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html.  
+
+The following procedures are completed in PowerShell: 
+
+a) Create a directory for the dependencies: "mkdir connection"
+b) 
+CD to the directory: "cd connection"
+
+c) Install the packages into the directory: "pip install --upgrade google-cloud-storage --target ."
+
+d) Create zip file of that package: "Compress-Archive -Path C:\path\connection -DestinationPath connection.zip"
+
+e) Add the function code to your zip: "Compress-Archive -Path C:\path\connection.py -DestinationPath connection.zip"
+
+f) Add the google credentials to your zip: "Compress-Archive -Path C:\path\googlecredentials.json -DestinationPath connection.zip"
+
+
+
+Step 4: Create the Lambda Function --
+
+Navigate to the AWS Lambda Console. Create function. Choose the 'Author from Scratch' option. 
+Choose the latest version of Python for 'Runtime'. For 'Execution Role', create or choose a role with basic Lambda permissions. 
+(You need to give Lambda access to write to S3). Once your select 'Create Function', you will be taken to the Lambda dashboard.
+Under "Function Code" header, click into the drop-down bar for "Code entry type". Select "Upload a .zip file".
+Change the "Handler" to appropriately call your function. In this case, it should be "connection.lambda_handler".
+Upload the zip file to the "Function package". 
+After completing those steps, you have appropriately completed your Lambda function. 
+Save your Lambda function. Select "Save" on the top-right to invoke your Lambda function and move files.
+
+Frequently Encountered Errors:
+-If you receive a Timeout error, consider increasing the Timeout window under "Basic Settings" in the Lambda console.
+-If you receive an "Unable to import module 'lambda_function'" error, make sure that the contents in your zip folder are not in a sub-folder.
+If there is an initial folder that houses everything inside your zip archive, Lambda will not be able to speak to your function code.
+
+Step 5: Enable the automation --
+Navigate to the CloudWatch Console. On the left pane, select 'Events'. Create a rule by selecting 'Get started'.
+Use "Event Source" to specify how often you would like the Lambda function to run.
+Under "Targets", select Add target. Choose the Lambda function you just created and "Configure details".
+Name your CloudWatch event and select "Create rule".
